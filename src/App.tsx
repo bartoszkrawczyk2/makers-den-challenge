@@ -1,7 +1,7 @@
-import { Autocomplete } from "./components/Autocomplete";
+import { GithubSearch } from "./components/GithubSearch";
 
 export const App = () => (
   <main className="mx-auto max-w-6xl p-4">
-    <Autocomplete />
+    <GithubSearch />
   </main>
 );
