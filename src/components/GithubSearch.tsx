@@ -10,20 +10,34 @@ export const GithubSearch = () => {
     ac.current = new AbortController();
     const signal = ac.current.signal;
 
-    const [repos, users] = await Promise.all([
+    // TODO: error handling
+    const [{ items: reposItems }, users] = await Promise.all([
       searchRepos(query, signal),
       searchUsers(query, signal),
     ]);
 
-    // TODO: sort and optimize
-    return [
-      ...repos.items,
-      ...users.items.map((item) => ({
-        ...item,
-        name: item.login,
-      })),
-    ];
+    const usersItems = users.items.map((item) => ({
+      ...item,
+      name: item.login,
+    }));
+
+    return [...reposItems, ...usersItems].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }, []);
 
-  return <Autocomplete asyncData={fetchData} />;
+  return (
+    <div>
+      <label className="inline-block mb-2 font-bold">
+        Search Github repos and users
+      </label>
+      <div className="max-w-80">
+        <Autocomplete asyncData={fetchData} />
+      </div>
+      <p>
+        Type at least 3 characters to start searching. Results are sorted
+        alphabetically
+      </p>
+    </div>
+  );
 };
