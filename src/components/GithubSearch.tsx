@@ -17,8 +17,8 @@ export const GithubSearch = () => {
 
     // TODO: sort and optimize
     return [
-      ...repos.data.items,
-      ...users.data.items.map((item) => ({
+      ...repos.items,
+      ...users.items.map((item) => ({
         ...item,
         name: item.login,
       })),

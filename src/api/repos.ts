@@ -1,13 +1,12 @@
-import { ofetch } from "ofetch";
 import { Octokit } from "octokit";
+import { ghFetch } from "./base";
 
-type ReposResponse = Awaited<ReturnType<Octokit["rest"]["search"]["repos"]>>;
+type ReposResponse = Awaited<
+  ReturnType<Octokit["rest"]["search"]["repos"]>
+>["data"];
 
 export const searchRepos = (q: string, signal?: AbortSignal) =>
-  ofetch<ReposResponse>("https://api.github.com/search/repositories", {
+  ghFetch<ReposResponse>("/search/repositories", {
     signal,
     query: { q },
-    headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-    },
   });
