@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useDebounced } from "../../utils/useDebounced";
 import { Spinner } from "./Spinner";
-import { SuggestionItem } from "./types";
+import type { SuggestionItem } from "./types";
 import { Suggestion } from "./Suggestion";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 
