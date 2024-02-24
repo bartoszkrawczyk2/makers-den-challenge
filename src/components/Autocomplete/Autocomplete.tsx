@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useDebounced } from "../../utils/useDebounced";
+import { Spinner } from "./Spinner";
 
 const MIN_SEARCH_LENGTH = 3;
 
@@ -16,7 +17,6 @@ type AutocompleteProps<T> = {
 export const Autocomplete = <T extends SuggestionItem>({
   asyncData,
 }: AutocompleteProps<T>) => {
-  // TODO: too much state, probably should use useReducer
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -47,11 +47,6 @@ export const Autocomplete = <T extends SuggestionItem>({
 
   return (
     <div className="relative">
-      {isLoading && (
-        <span className="absolute right-0.5 bg-slate-50 rounded-lg inset-y-0.5 w-11 flex items-center justify-center">
-          <span className="animate-spin block w-5 h-5 rounded-full border-2 border-slate-300 border-t-slate-500" />
-        </span>
-      )}
       <input
         value={inputValue}
         onKeyUp={handleKeyboard}
@@ -59,6 +54,7 @@ export const Autocomplete = <T extends SuggestionItem>({
         onBlur={() => setIsVisible(false)}
         className="bg-slate-50 py-3 px-4 mb-2 block w-full border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50"
       />
+      {isLoading && <Spinner />}
       {shouldShowDropdown && (
         <ul className="empty:hidden overflow-y-auto max-h-64 absolute inset-x-0 bg-slate-50 border border-gray-300 rounded-lg -mt-1">
           {!suggestions?.length && isLoading && <li>loading...</li>}
