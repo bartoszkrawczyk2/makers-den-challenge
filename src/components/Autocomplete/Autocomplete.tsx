@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ChangeEvent, KeyboardEvent } from "react";
+import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import { useDebounced } from "../../utils/useDebounced";
 import { Spinner } from "./Spinner";
 import type { SuggestionItem } from "./types";
@@ -12,11 +12,13 @@ const MIN_SEARCH_LENGTH = 3;
 type AutocompleteProps<T> = {
   asyncData?: (query: string) => Promise<T[]>;
   onSelect?: (item: T) => void;
+  renderItem?: (item: T) => ReactNode;
 };
 
 export const Autocomplete = <T extends SuggestionItem>({
   asyncData,
   onSelect,
+  renderItem,
 }: AutocompleteProps<T>) => {
   const autocompleteElement = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
@@ -49,6 +51,7 @@ export const Autocomplete = <T extends SuggestionItem>({
     if (["ArrowDown", "ArrowUp"].includes(e.code)) {
       e.preventDefault();
       setActiveIndex(newIndex(e.code, activeIndex ?? 0, suggestions || []));
+      setIsVisible(true);
     }
   };
 
@@ -85,6 +88,7 @@ export const Autocomplete = <T extends SuggestionItem>({
               onClick={onItemClick}
               index={index}
               onHover={setActiveIndex}
+              render={renderItem}
             >
               {item.name}
             </Suggestion>

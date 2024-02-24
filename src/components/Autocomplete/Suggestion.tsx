@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { useEffect, useRef } from "react";
 
 type SuggestionProps<T> = {
@@ -8,6 +8,7 @@ type SuggestionProps<T> = {
   item?: T;
   onClick?: (item: T) => void;
   onHover?: (index: number) => void;
+  render?: (item: T) => ReactNode;
 };
 
 export const Suggestion = <T,>({
@@ -17,6 +18,7 @@ export const Suggestion = <T,>({
   index,
   onClick,
   onHover,
+  render,
 }: PropsWithChildren<SuggestionProps<T>>) => {
   const ref = useRef<HTMLLIElement>(null);
 
@@ -32,7 +34,7 @@ export const Suggestion = <T,>({
           className="w-full text-left p-2"
           onMouseEnter={() => onHover?.(index ?? 0)}
         >
-          {children}
+          {render?.(item) || children}
         </button>
       </li>
     );
