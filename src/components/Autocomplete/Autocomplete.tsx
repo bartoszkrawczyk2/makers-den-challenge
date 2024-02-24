@@ -5,6 +5,7 @@ import { Spinner } from "./Spinner";
 import type { SuggestionItem } from "./types";
 import { Suggestion } from "./Suggestion";
 import { useOutsideClick } from "../../utils/useOutsideClick";
+import { newIndex } from "../../utils/newIndex";
 
 const MIN_SEARCH_LENGTH = 3;
 
@@ -21,6 +22,7 @@ export const Autocomplete = <T extends SuggestionItem>({
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState<T[]>();
   const search = useDebounced(inputValue);
 
@@ -37,16 +39,22 @@ export const Autocomplete = <T extends SuggestionItem>({
   }, [asyncData, search]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setActiveIndex(-1);
     setInputValue(e.target.value);
     setIsVisible(true);
   };
 
   const handleKeyboard = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.code === "Escape") setIsVisible(false);
+    if (["ArrowDown", "ArrowUp"].includes(e.code)) {
+      e.preventDefault();
+      setActiveIndex(newIndex(e.code, activeIndex ?? 0, suggestions || []));
+    }
   };
 
   const onItemClick = (item: T) => {
     onSelect?.(item);
+    setActiveIndex(-1);
     setIsVisible(false);
     setSuggestions(undefined);
     setInputValue("");
@@ -59,7 +67,7 @@ export const Autocomplete = <T extends SuggestionItem>({
     <div className="relative" ref={autocompleteElement}>
       <input
         value={inputValue}
-        onKeyUp={handleKeyboard}
+        onKeyDown={handleKeyboard}
         onChange={onChange}
         className="bg-slate-50 py-3 px-4 mb-2 block w-full border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50"
       />
@@ -69,8 +77,15 @@ export const Autocomplete = <T extends SuggestionItem>({
           {!Array.isArray(suggestions) && isLoading && (
             <Suggestion>Loading...</Suggestion>
           )}
-          {suggestions?.map((item) => (
-            <Suggestion key={item.id} item={item} onClick={onItemClick}>
+          {suggestions?.map((item, index) => (
+            <Suggestion
+              active={activeIndex === index}
+              key={item.id}
+              item={item}
+              onClick={onItemClick}
+              index={index}
+              onHover={setActiveIndex}
+            >
               {item.name}
             </Suggestion>
           ))}
