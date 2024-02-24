@@ -1,17 +1,10 @@
-import { useState } from "react";
+import { Autocomplete } from "./components/Autocomplete";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <button
-        className="bg-blue-300"
-        onClick={() => setCount((count) => count + 1)}
-      >
-        count is {count}
-      </button>
-    </>
+    <main className="mx-auto max-w-6xl p-4">
+      <Autocomplete />
+    </main>
   );
 }
 
