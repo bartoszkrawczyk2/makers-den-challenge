@@ -1,18 +1,18 @@
 import { useCallback, useRef } from "react";
 import { Autocomplete } from "./Autocomplete";
-import { octokit } from "../utils/octokit";
+import { searchRepos, searchUsers } from "../api";
 
 export const GithubSearch = () => {
   const ac = useRef<AbortController>();
 
-  const fetchData = useCallback(async (q: string) => {
+  const fetchData = useCallback(async (query: string) => {
     ac.current?.abort();
     ac.current = new AbortController();
     const signal = ac.current.signal;
 
     const [repos, users] = await Promise.all([
-      octokit.rest.search.repos({ request: { signal }, q }),
-      octokit.rest.search.users({ request: { signal }, q }),
+      searchRepos(query, signal),
+      searchUsers(query, signal),
     ]);
 
     // TODO: sort and optimize
