@@ -19,6 +19,8 @@ export const GithubSearch = () => {
     const usersItems = users.items.map((item) => ({
       ...item,
       name: item.login,
+      id: `user-${item.id}`, // avoid potential id conflicts with repos
+      userId: item.id,
     }));
 
     return [...reposItems, ...usersItems].sort((a, b) =>
@@ -32,7 +34,10 @@ export const GithubSearch = () => {
         Search Github repos and users
       </label>
       <div className="max-w-80">
-        <Autocomplete asyncData={fetchData} />
+        <Autocomplete
+          asyncData={fetchData}
+          onSelect={(item) => console.log("Selected:", item)}
+        />
       </div>
       <p>
         Type at least 3 characters to start searching. Results are sorted

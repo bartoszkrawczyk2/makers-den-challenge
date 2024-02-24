@@ -1,27 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useDebounced } from "../../utils/useDebounced";
 import { Spinner } from "./Spinner";
+import { SuggestionItem } from "./types";
+import { Suggestion } from "./Suggestion";
+import { useOutsideClick } from "../../utils/useOutsideClick";
 
 const MIN_SEARCH_LENGTH = 3;
 
-type SuggestionItem = {
-  id: string | number;
-  name: string;
-};
-
 type AutocompleteProps<T> = {
   asyncData?: (query: string) => Promise<T[]>;
+  onSelect?: (item: T) => void;
 };
 
 export const Autocomplete = <T extends SuggestionItem>({
   asyncData,
+  onSelect,
 }: AutocompleteProps<T>) => {
+  const autocompleteElement = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [suggestions, setSuggestions] = useState<T[]>();
   const search = useDebounced(inputValue);
+
+  useOutsideClick(autocompleteElement, () => setIsVisible(false));
 
   useEffect(() => {
     const query = search.trim();
@@ -42,26 +45,36 @@ export const Autocomplete = <T extends SuggestionItem>({
     if (e.code === "Escape") setIsVisible(false);
   };
 
+  const onItemClick = (item: T) => {
+    onSelect?.(item);
+    setIsVisible(false);
+    setSuggestions(undefined);
+    setInputValue("");
+  };
+
   const shouldShowDropdown =
     isVisible && inputValue.trim().length >= MIN_SEARCH_LENGTH;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={autocompleteElement}>
       <input
         value={inputValue}
         onKeyUp={handleKeyboard}
         onChange={onChange}
-        onBlur={() => setIsVisible(false)}
         className="bg-slate-50 py-3 px-4 mb-2 block w-full border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50"
       />
       {isLoading && <Spinner />}
       {shouldShowDropdown && (
-        <ul className="empty:hidden overflow-y-auto max-h-64 absolute inset-x-0 bg-slate-50 border border-gray-300 rounded-lg -mt-1">
-          {!suggestions?.length && isLoading && <li>loading...</li>}
+        <ul className="scrollbar empty:hidden overflow-y-auto max-h-72 absolute inset-x-0 bg-slate-50 border border-gray-300 rounded-lg -mt-1">
+          {!Array.isArray(suggestions) && isLoading && (
+            <Suggestion>Loading...</Suggestion>
+          )}
           {suggestions?.map((item) => (
-            <li key={item.id}>{item.name}</li>
+            <Suggestion key={item.id} item={item} onClick={onItemClick}>
+              {item.name}
+            </Suggestion>
           ))}
-          {suggestions?.length === 0 && <li>no results</li>}
+          {suggestions?.length === 0 && <Suggestion>No results</Suggestion>}
         </ul>
       )}
     </div>
