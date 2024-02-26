@@ -13,7 +13,6 @@ export const GithubSearch = () => {
     ac.current = new AbortController();
     const signal = ac.current.signal;
 
-    // TODO: error handling
     const [repos, users] = await Promise.all([
       searchRepos({ searchQuery }, signal),
       searchUsers({ searchQuery }, signal),

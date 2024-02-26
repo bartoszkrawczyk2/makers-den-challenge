@@ -23,6 +23,9 @@ export const Autocomplete = <T extends SuggestionItem>({
   const autocompleteElement = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
   const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState<T[]>();
@@ -35,8 +38,10 @@ export const Autocomplete = <T extends SuggestionItem>({
     if (query.length < MIN_SEARCH_LENGTH) return;
 
     setIsLoading(true);
+    setErrorMessage(undefined);
     asyncData?.(query)
       .then(setSuggestions)
+      .catch((e) => setErrorMessage(e?.message || JSON.stringify(e)))
       .finally(() => setIsLoading(false));
   }, [asyncData, search]);
 
@@ -80,20 +85,28 @@ export const Autocomplete = <T extends SuggestionItem>({
           {!Array.isArray(suggestions) && isLoading && (
             <Suggestion>Loading...</Suggestion>
           )}
-          {suggestions?.map((item, index) => (
-            <Suggestion
-              active={activeIndex === index}
-              key={item.id}
-              item={item}
-              onClick={onItemClick}
-              index={index}
-              onHover={setActiveIndex}
-              render={renderItem}
-            >
-              {item.name}
+          {typeof errorMessage !== "undefined" ? (
+            <Suggestion>
+              <span className="text-red-600">Error: {errorMessage}</span>
             </Suggestion>
-          ))}
-          {suggestions?.length === 0 && <Suggestion>No results</Suggestion>}
+          ) : (
+            <>
+              {suggestions?.map((item, index) => (
+                <Suggestion
+                  active={activeIndex === index}
+                  key={item.id}
+                  item={item}
+                  onClick={onItemClick}
+                  index={index}
+                  onHover={setActiveIndex}
+                  render={renderItem}
+                >
+                  {item.name}
+                </Suggestion>
+              ))}
+              {suggestions?.length === 0 && <Suggestion>No results</Suggestion>}
+            </>
+          )}
         </ul>
       )}
     </div>
