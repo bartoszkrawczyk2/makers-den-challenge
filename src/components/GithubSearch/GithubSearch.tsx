@@ -19,7 +19,7 @@ export const GithubSearch = () => {
       searchUsers({ searchQuery }, signal),
     ]);
 
-    return combineReposAndUsers(users.items, repos.items);
+    return combineReposAndUsers({ users: users.items, repos: repos.items });
   }, []);
 
   return (

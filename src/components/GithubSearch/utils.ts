@@ -2,10 +2,15 @@ import type { GithubRepo } from "../../api/repos";
 import type { GithubUser } from "../../api/users";
 import { ItemType } from "../../types";
 
-export const combineReposAndUsers = (
-  users: GithubUser[],
-  repos: GithubRepo[]
-) => {
+type CombineReposAndUsersOptions = {
+  users: GithubUser[];
+  repos: GithubRepo[];
+};
+
+export const combineReposAndUsers = ({
+  users,
+  repos,
+}: CombineReposAndUsersOptions) => {
   const usersItems = users.map((item) => ({
     ...item,
     name: item.login,
