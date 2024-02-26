@@ -1,40 +1,25 @@
 import { useCallback, useRef } from "react";
-import { Autocomplete } from "./Autocomplete";
-import { searchRepos, searchUsers } from "../api";
-import { ItemType } from "../types";
-import { LucideFolderGit2, LucideCircleUserRound } from "./Icon";
+import { Autocomplete } from "../common/Autocomplete";
+import { searchRepos, searchUsers } from "../../api";
+import { ItemType } from "../../types";
+import { LucideFolderGit2, LucideCircleUserRound } from "../common/Icon";
+import { combineReposAndUsers } from "./utils";
 
 export const GithubSearch = () => {
   const ac = useRef<AbortController>();
 
-  const fetchData = useCallback(async (query: string) => {
+  const fetchData = useCallback(async (searchQuery: string) => {
     ac.current?.abort();
     ac.current = new AbortController();
     const signal = ac.current.signal;
 
     // TODO: error handling
     const [repos, users] = await Promise.all([
-      searchRepos(query, signal),
-      searchUsers(query, signal),
+      searchRepos({ searchQuery }, signal),
+      searchUsers({ searchQuery }, signal),
     ]);
 
-    // TODO: move to a function
-    const usersItems = users.items.map((item) => ({
-      ...item,
-      name: item.login,
-      id: `user-${item.id}`, // avoid potential id conflicts with repos
-      userId: item.id,
-      itemType: ItemType.User,
-    }));
-
-    const reposItems = repos.items.map((item) => ({
-      ...item,
-      itemType: ItemType.Repo,
-    }));
-
-    return [...reposItems, ...usersItems].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    return combineReposAndUsers(users.items, repos.items);
   }, []);
 
   return (

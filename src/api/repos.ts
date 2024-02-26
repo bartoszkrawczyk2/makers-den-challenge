@@ -1,12 +1,22 @@
 import type { Octokit } from "octokit";
 import { ghFetch } from "./base";
 
-type ReposResponse = Awaited<
+export type ReposResponse = Awaited<
   ReturnType<Octokit["rest"]["search"]["repos"]>
 >["data"];
 
-export const searchRepos = (q: string, signal?: AbortSignal) =>
+export type GithubRepo = ReposResponse["items"][number];
+
+type SearchReposQuery = {
+  searchQuery: string;
+  perPage?: number;
+};
+
+export const searchRepos = (
+  { searchQuery, perPage = 50 }: SearchReposQuery,
+  signal?: AbortSignal
+) =>
   ghFetch<ReposResponse>("/search/repositories", {
     signal,
-    query: { q },
+    query: { q: searchQuery, per_page: perPage },
   });

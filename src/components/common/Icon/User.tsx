@@ -12,9 +12,9 @@ export function LucideCircleUserRound(props: SVGProps<SVGSVGElement>) {
       <g
         fill="none"
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
       >
         <path d="M18 20a6 6 0 0 0-12 0"></path>
         <circle cx="12" cy="10" r="4"></circle>
