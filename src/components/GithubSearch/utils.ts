@@ -19,7 +19,7 @@ export const combineReposAndUsers = (
     itemType: ItemType.Repo,
   }));
 
-  return [...reposItems, ...usersItems]
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .slice(0, 50);
+  return [...reposItems, ...usersItems].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 };
