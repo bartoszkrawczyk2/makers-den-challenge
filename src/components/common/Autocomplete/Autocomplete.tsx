@@ -110,7 +110,7 @@ export const Autocomplete = <T extends SuggestionItem>({
                   item={item}
                   onClick={onItemClick}
                   index={index}
-                  onHover={setActiveIndex}
+                  onSelect={setActiveIndex}
                   render={renderItem}
                 >
                   {item.name}

@@ -7,7 +7,7 @@ type SuggestionProps<T> = {
   index?: number;
   item?: T;
   onClick?: (item: T) => void;
-  onHover?: (index: number) => void;
+  onSelect?: (index: number) => void;
   render?: (item: T) => ReactNode;
 };
 
@@ -17,7 +17,7 @@ export const Suggestion = <T,>({
   item,
   index,
   onClick,
-  onHover,
+  onSelect,
   render,
 }: PropsWithChildren<SuggestionProps<T>>) => {
   const ref = useRef<HTMLLIElement>(null);
@@ -31,8 +31,9 @@ export const Suggestion = <T,>({
       <li ref={ref} className={clsx("w-full", { "bg-slate-200": active })}>
         <button
           onClick={() => onClick?.(item)}
+          onFocus={() => onSelect?.(index ?? 0)}
           className="w-full text-left p-2"
-          onMouseEnter={() => onHover?.(index ?? 0)}
+          onMouseEnter={() => onSelect?.(index ?? 0)}
         >
           {render?.(item) || children}
         </button>
