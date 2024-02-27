@@ -1,30 +1,79 @@
-# React + TypeScript + Vite
+# Makers' Den coding challenge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Autocomplete component that allows searching public repositories and users using Github REST API.
 
-Currently, two official plugins are available:
+![image](./public/screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is created with [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/),
+[Vite](https://vitejs.dev/) and [TailwindCSS](https://tailwindcss.com/).
 
-## Expanding the ESLint configuration
+## Project structure and purpose
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Main components:
 
-- Configure the top-level `parserOptions` property like this:
+1. `<Autocomplete>` - Generic component that can render any asynchronous data. Handles input field, displaying dropdown, keyboard navigation etc.
+2. `<GithubSearch>` - Github search with autocomplete that builds on top of generic `<Autocomplete>` by adding domain-specific data (Github API in this case).
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+Structure overview:
+
+```
+src
+├─ main.tsx              // React app entry point
+├─ api                   // Github API
+├─ components
+│  ├─ common
+│  │  └─ Autocomplete    // generic Autocomplete component
+│  └─ GithubSearch       // Github search that builds on top of Autocomplete component
+└─ hooks                 // utility hooks for debouncing and DOM
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Running this project
+
+Prerequisites
+
+- Node v20.x.x
+
+### Setting up environment:
+
+1. Create `.env` file in the **root directory**
+2. Put your [Github access token](https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api?apiVersion=2022-11-28#authenticating-with-a-personal-access-token) in the `.env` file:
+
+```
+VITE_GITHUB_TOKEN=your_token_here
+```
+
+Without `VITE_GITHUB_TOKEN` environment variable this app won't start or build. It will throw following error:
+
+```
+Error: VITE_GITHUB_TOKEN env variable is missing
+```
+
+### Installing dependencies
+
+This project is using `npm`. To install dependencies run:
+
+```
+npm install
+```
+
+### Running
+
+To start local development server run:
+
+```
+npm run dev
+```
+
+It will start on [http://localhost:5174/](http://localhost:5174/) by default.
+
+Building for production (static files):
+
+```
+npm run build
+```
+
+Run tests:
+
+```
+npm run test
+```
