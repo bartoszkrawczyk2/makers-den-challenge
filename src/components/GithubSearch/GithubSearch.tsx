@@ -28,6 +28,10 @@ export const GithubSearch = () => {
     }
   }, []);
 
+  const onSelect = (item: { html_url: string }) => {
+    window.open(item.html_url, "_blank");
+  };
+
   return (
     <div>
       <label className="inline-block mb-2 font-bold">
@@ -37,7 +41,7 @@ export const GithubSearch = () => {
         <Autocomplete
           autoFocus
           asyncData={fetchData}
-          onSelect={(item) => console.log("Selected:", item)}
+          onSelect={onSelect}
           renderItem={(item) => (
             <div className="flex items-center gap-2">
               {item.itemType === ItemType.Repo && <LucideFolderGit2 />}

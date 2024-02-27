@@ -62,6 +62,14 @@ export const Autocomplete = <T extends SuggestionItem>({
     setIsVisible(true);
   };
 
+  const onItemClick = (item: T) => {
+    onSelect?.(item);
+    setActiveIndex(-1);
+    setIsVisible(false);
+    setSuggestions(undefined);
+    setInputValue("");
+  };
+
   const handleKeyboard = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.code === "Escape") setIsVisible(false);
     if (["ArrowDown", "ArrowUp"].includes(e.code)) {
@@ -69,14 +77,10 @@ export const Autocomplete = <T extends SuggestionItem>({
       setActiveIndex(newIndex(e.code, activeIndex ?? 0, suggestions || []));
       setIsVisible(true);
     }
-  };
-
-  const onItemClick = (item: T) => {
-    onSelect?.(item);
-    setActiveIndex(-1);
-    setIsVisible(false);
-    setSuggestions(undefined);
-    setInputValue("");
+    if (e.code === "Enter") {
+      e.preventDefault();
+      suggestions?.[activeIndex] && onItemClick(suggestions[activeIndex]);
+    }
   };
 
   const shouldShowDropdown =
