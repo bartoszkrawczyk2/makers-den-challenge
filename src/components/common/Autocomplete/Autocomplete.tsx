@@ -12,6 +12,7 @@ const DEFAULT_MIN_SEARCH_LENGTH = 3;
 type AutocompleteProps<T> = {
   minSearchLength?: number;
   autoFocus?: boolean;
+  debounceTime?: number;
   asyncData?: (query: string) => Promise<T[] | undefined>;
   onSelect?: (item: T) => void;
   renderItem?: (item: T) => ReactNode;
@@ -22,6 +23,7 @@ export const Autocomplete = <T extends SuggestionItem>({
   onSelect,
   renderItem,
   autoFocus,
+  debounceTime,
   minSearchLength = DEFAULT_MIN_SEARCH_LENGTH,
 }: AutocompleteProps<T>) => {
   const autocompleteElement = useRef<HTMLDivElement>(null);
@@ -33,7 +35,7 @@ export const Autocomplete = <T extends SuggestionItem>({
   const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [suggestions, setSuggestions] = useState<T[]>();
-  const search = useDebounced(inputValue);
+  const search = useDebounced(inputValue, debounceTime);
 
   useOutsideClick(autocompleteElement, () => setIsVisible(false));
 
@@ -89,6 +91,7 @@ export const Autocomplete = <T extends SuggestionItem>({
   return (
     <div className="relative" ref={autocompleteElement}>
       <input
+        data-testid="input"
         autoFocus={autoFocus}
         value={inputValue}
         onKeyDown={handleKeyboard}
@@ -97,7 +100,10 @@ export const Autocomplete = <T extends SuggestionItem>({
       />
       {isLoading && <Spinner />}
       {shouldShowDropdown && (
-        <ul className="scrollbar empty:hidden overflow-y-auto max-h-72 absolute inset-x-0 bg-slate-50 border border-gray-300 rounded-lg -mt-1">
+        <ul
+          data-testid="dropdown"
+          className="scrollbar empty:hidden overflow-y-auto max-h-72 absolute inset-x-0 bg-slate-50 border border-gray-300 rounded-lg -mt-1"
+        >
           {!Array.isArray(suggestions) && isLoading && (
             <Suggestion>Loading...</Suggestion>
           )}
