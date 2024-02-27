@@ -18,5 +18,5 @@ export const searchRepos = (
 ) =>
   ghFetch<ReposResponse>("/search/repositories", {
     signal,
-    query: { q: searchQuery, per_page: perPage },
+    params: { q: searchQuery, per_page: perPage },
   });

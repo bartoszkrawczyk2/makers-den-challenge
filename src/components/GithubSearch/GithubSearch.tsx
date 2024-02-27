@@ -4,6 +4,7 @@ import { searchRepos, searchUsers } from "../../api";
 import { ItemType } from "../../types";
 import { LucideFolderGit2, LucideCircleUserRound } from "../common/Icon";
 import { combineReposAndUsers } from "./utils";
+import { AxiosError } from "axios";
 
 export const GithubSearch = () => {
   const ac = useRef<AbortController>();
@@ -13,12 +14,18 @@ export const GithubSearch = () => {
     ac.current = new AbortController();
     const signal = ac.current.signal;
 
-    const [repos, users] = await Promise.all([
-      searchRepos({ searchQuery }, signal),
-      searchUsers({ searchQuery }, signal),
-    ]);
-
-    return combineReposAndUsers({ users: users.items, repos: repos.items });
+    try {
+      const [{ data: repos }, { data: users }] = await Promise.all([
+        searchRepos({ searchQuery }, signal),
+        searchUsers({ searchQuery }, signal),
+      ]);
+      return combineReposAndUsers({ users: users.items, repos: repos.items });
+    } catch (error) {
+      if (error instanceof AxiosError && error.code === "ERR_CANCELED") {
+        return undefined;
+      }
+      throw error;
+    }
   }, []);
 
   return (

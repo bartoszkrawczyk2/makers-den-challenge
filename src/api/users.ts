@@ -18,5 +18,5 @@ export const searchUsers = (
 ) =>
   ghFetch<UsersResponse>("/search/users", {
     signal,
-    query: { q: searchQuery, per_page: perPage },
+    params: { q: searchQuery, per_page: perPage },
   });

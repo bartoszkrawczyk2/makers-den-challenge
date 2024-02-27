@@ -10,7 +10,7 @@ import { newIndex } from "./utils";
 const MIN_SEARCH_LENGTH = 3;
 
 type AutocompleteProps<T> = {
-  asyncData?: (query: string) => Promise<T[]>;
+  asyncData?: (query: string) => Promise<T[] | undefined>;
   onSelect?: (item: T) => void;
   renderItem?: (item: T) => ReactNode;
 };
@@ -40,9 +40,16 @@ export const Autocomplete = <T extends SuggestionItem>({
     setIsLoading(true);
     setErrorMessage(undefined);
     asyncData?.(query)
-      .then(setSuggestions)
-      .catch((e) => setErrorMessage(e?.message || JSON.stringify(e)))
-      .finally(() => setIsLoading(false));
+      .then((results) => {
+        if (results) {
+          setIsLoading(false);
+          setSuggestions(results);
+        }
+      })
+      .catch((e) => {
+        setErrorMessage(e?.message || JSON.stringify(e));
+        setIsLoading(false);
+      });
   }, [asyncData, search]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
