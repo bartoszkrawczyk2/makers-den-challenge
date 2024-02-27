@@ -35,6 +35,7 @@ export const GithubSearch = () => {
       </label>
       <div className="max-w-80">
         <Autocomplete
+          autoFocus
           asyncData={fetchData}
           onSelect={(item) => console.log("Selected:", item)}
           renderItem={(item) => (

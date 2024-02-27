@@ -7,9 +7,11 @@ import { Suggestion } from "./Suggestion";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { newIndex } from "./utils";
 
-const MIN_SEARCH_LENGTH = 3;
+const DEFAULT_MIN_SEARCH_LENGTH = 3;
 
 type AutocompleteProps<T> = {
+  minSearchLength?: number;
+  autoFocus?: boolean;
   asyncData?: (query: string) => Promise<T[] | undefined>;
   onSelect?: (item: T) => void;
   renderItem?: (item: T) => ReactNode;
@@ -19,6 +21,8 @@ export const Autocomplete = <T extends SuggestionItem>({
   asyncData,
   onSelect,
   renderItem,
+  autoFocus,
+  minSearchLength = DEFAULT_MIN_SEARCH_LENGTH,
 }: AutocompleteProps<T>) => {
   const autocompleteElement = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
@@ -35,7 +39,7 @@ export const Autocomplete = <T extends SuggestionItem>({
 
   useEffect(() => {
     const query = search.trim();
-    if (query.length < MIN_SEARCH_LENGTH) return;
+    if (query.length < minSearchLength) return;
 
     setIsLoading(true);
     setErrorMessage(undefined);
@@ -50,7 +54,7 @@ export const Autocomplete = <T extends SuggestionItem>({
         setErrorMessage(e?.message || JSON.stringify(e));
         setIsLoading(false);
       });
-  }, [asyncData, search]);
+  }, [asyncData, minSearchLength, search]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setActiveIndex(-1);
@@ -76,11 +80,12 @@ export const Autocomplete = <T extends SuggestionItem>({
   };
 
   const shouldShowDropdown =
-    isVisible && inputValue.trim().length >= MIN_SEARCH_LENGTH;
+    isVisible && inputValue.trim().length >= minSearchLength;
 
   return (
     <div className="relative" ref={autocompleteElement}>
       <input
+        autoFocus={autoFocus}
         value={inputValue}
         onKeyDown={handleKeyboard}
         onChange={onChange}
